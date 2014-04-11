@@ -1,5 +1,6 @@
 require_relative '../model/users.rb'
-#DB = SQLite3::Database.open "../model/test.db"
+require_relative './prompt.rb'
+DB = SQLite3::Database.open "../model/test.db"
 
 class UserInterface
 extend BackendCommunication
@@ -78,7 +79,7 @@ end
 
 
 fake_game = "this is the game playing"
-user = UserInterface.welcome_screen
+game_user = UserInterface.welcome_screen
 
 user.pick_players('bowser', 'yoshi')
 user.place_bet('yoshi')
@@ -87,7 +88,7 @@ puts fake_game
 user.check_winner('winner of game')
 
 
-p user
+#p user
 
 
   # welcome screen
