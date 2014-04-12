@@ -1,15 +1,29 @@
 require_relative '../model/users.rb'
 DB = SQLite3::Database.open "../model/test.db"
+require_relative './prompt.rb'
 
 class UserInterface
-extend BackendCommunication
+  extend BackendCommunication
+  MESSAGES = {preamble: ["\nWelcome to Mario Kart (DBC style)!",
+                         "Are you a new user?"]}
+  def self.render(content)
+    if content.is_a? Array
+      content.each {|msg| puts msg}
+    else
+      puts content
+    end
+  end
+
+  def self.render_message(id)
+    self.render(MESSAGES[id])
+  end
 
   def self.welcome_screen
     puts "\nWelcome to Mario Kart (DBC style)!"
     puts "Are you a new user?"
     answer = gets.chomp!
     p answer
-    unless answer.downcase.to_s == "yes" || answer.downcase.to_s == "no"
+    until answer.downcase.to_s == "yes" || answer.downcase.to_s == "no"
       puts "That is not acceptable, please put a yes, or a no..."
       answer = gets.chomp!
     end
@@ -24,7 +38,7 @@ extend BackendCommunication
       password = rand(1000).to_s + rand(1000).to_s
       puts "Your username is #{user_name} and password is #{password}."
       user = User.new(user_name, password)
-      user.add_user_to_database
+      BackendCommunication.add_user_to_database(user_name, password)
 
     else
       puts "\nPlease enter your user_name:"
@@ -63,7 +77,7 @@ end
 fake_game = "this is the game playing"
 user = UserInterface.welcome_screen
 
-user.pick_players('bowser', 'yoshi')
+# user.pick_players('bowser', 'yoshi')
 user.place_bet('yoshi')
 #user.update_points(110)
 puts fake_game

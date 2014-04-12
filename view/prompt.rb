@@ -11,7 +11,7 @@ class PromptManager
 
   def self.validated_prompt(regex)
     input = self.prompt
-    yield if input =~ regex
+    yield if input !~ regex
     input
   end
 end

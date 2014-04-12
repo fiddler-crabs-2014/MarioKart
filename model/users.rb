@@ -10,16 +10,30 @@ class User
      @password = password
      @points = points
      @bet_amount = 0
-     @bet_player
+     @bet_player = nil
+     @racers = []
   end
 
-  def place_bet(value)
-
+  def choose_racers(*racers)
+    @racers = *racers
   end
 
-  def check_winner
-    # get the winner from the game, compare it to @bet_player
-    # update points accordingly
+  def place_bet(value, player)
+    @bet_player = player
+    @bet_amount = value
+  end
+
+  def check_winner(winner)
+    return true if winner == @bet_player
+    return false
+  end
+
+  def update_points(winner)
+    if check_winner(winner)
+      @points += @bet_amount*(@racers.length-1)
+    else
+      @points -= @bet_amount
+    end
   end
 
 end
@@ -29,9 +43,9 @@ end
 module BackendCommunication
   DB = SQLite3::Database.open "../model/test.db"
 
-  def add_user_to_database
+  def self.add_user_to_database(user_name, password)
     DB.execute("INSERT INTO users (user_name, password, points)
-                VALUES (?, ?, ?)", [@user_name, @password, @points])
+                VALUES (?, ?, ?)", [user_name, password, 100])
   end
 
   def self.validate_user(user, pw)
