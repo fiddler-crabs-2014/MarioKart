@@ -1,5 +1,7 @@
 require_relative '../model/users.rb'
 require_relative './prompt.rb'
+require_relative '../controller/controller.rb'
+require 'debugger'
 DB = SQLite3::Database.open "../model/test.db"
 
 class UserInterface
@@ -91,14 +93,26 @@ end
 
 fake_game = "this is the game playing"
 game_user = UserInterface.welcome_screen
+sleep(1.0)
+puts game_user.points
+puts game_user.bet_player
+sleep(1.0)
 #UserInterface.login_user()
+#debugger
 game_user.choose_racers('bowser', 'yoshi')
 game_user.place_bet(10, 'yoshi')
+sleep(1.0)
+puts game_user.bet_player
 #user.update_points(110)
-puts fake_game
-game_user.update_points('yoshi')
+race = MarioKart.new('bowser', 'yoshi')
+winner = race.return_winner
+#play_a_game('bowser', 'yoshi')
+sleep(1.0)
+game_user.update_points(winner)
+sleep(1.0)
 puts game_user.points
-
+puts game_user.bet_player
+sleep(1.0)
 
 #p user
 

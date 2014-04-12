@@ -4,13 +4,13 @@ require 'sqlite3'
 #Only deals with the users
 #===========================================
 class User
-  attr_reader :user_name, :password, :points
+  attr_reader :user_name, :password, :points, :bet_player
   def initialize(user_name, password, points = 100)
      @user_name = user_name
      @password = password
      @points = points
      @bet_amount = 0
-     @bet_player = nil
+     @bet_player = 'yoshi'
      @racers = []
   end
 
@@ -24,7 +24,7 @@ class User
   end
 
   def check_winner(winner)
-    return true if winner == @bet_player
+    return true if winner.to_s == @bet_player
     return false
   end
 

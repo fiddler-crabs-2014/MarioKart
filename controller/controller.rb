@@ -3,9 +3,11 @@ require_relative 'utils'
 class MarioKart
 
   def initialize(*players)
-    @length = 10
+    @length = 20
     @players = players
+    @winner = nil
     prepare_players(players)
+    #return @winner
   end
 
   def prepare_players(players)
@@ -35,8 +37,9 @@ class MarioKart
   end
 
   def winner(players)
-    winner = @player_hash.sort_by { |k,v| v }.last
-    puts "#{winner[0]} wins!"
+    winner_arr = @player_hash.sort_by { |k,v| v }.last
+    @winner = winner_arr[0]
+    puts "#{@winner} wins!"
   end
 
   def run!
@@ -52,7 +55,8 @@ class MarioKart
     puts; puts
     puts winner(@players)
   end
+  def return_winner
+    return @winner
+  end
 end
 
-
-MarioKart.new("Bowser", "Yoshi", "Mario", "Donkey Kong")
