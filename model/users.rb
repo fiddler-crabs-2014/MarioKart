@@ -5,12 +5,13 @@ require 'sqlite3'
 #===========================================
 class User
   attr_reader :user_name, :password, :points, :bet_player
+  attr_accessor :points
   def initialize(user_name, password, points = 100)
      @user_name = user_name
      @password = password
      @points = points
      @bet_amount = 0
-     @bet_player = 'yoshi'
+     @bet_player = nil
      @racers = []
   end
 
@@ -18,26 +19,25 @@ class User
     @racers = *racers
   end
 
-  def place_bet(value, player)
-    @bet_player = player
-    @bet_amount = value
-  end
-
   def check_winner(winner)
     return true if winner.to_s == @bet_player
     return false
+  end
+
+  def place_bet(value, player)
+    @bet_amount = value
+    @bet_player = player
   end
 
   def update_points(winner)
     if check_winner(winner)
       @points += @bet_amount*(@racers.length-1)
     else
-      @points -= @bet_amount
+      @points = @points - @bet_amount.to_i
     end
   end
 
 end
-
 
 
 module BackendCommunication
@@ -59,5 +59,18 @@ module BackendCommunication
 
   def self.collect_points(password)
    return DB.execute("select points from users where password = '#{password}'").flatten[0]
+  end
+end
+
+# ----
+## Non-executable driver code
+
+module GameLogic
+  def find_winners_and_update_points(winners, users)
+    winners.each do |winner|
+      if user.bet_player == winner
+        user.update_points
+      end
+    end
   end
 end

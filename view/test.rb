@@ -14,18 +14,22 @@ class UserInterface
                no_problem_first: ["Ok, no problem. What is your first name?"],
                no_problem_last: ["What is your last name?"],
                }
-
+  #Controls the entire game flow
+  #========================================
   def self.run_game
     game_user = self.login_screen
+    puts "game user class: #{game_user.class}"
+    puts game_user.points
     players = self.ask_for_players
-    game_user.choose_racers(players)
-    #game_user.place_bet(10, 'mario')
-    self.choose_bet(game_user)
+    game_user.choose_racers(players) #users.rb
+    my_bet = Bet.new
+    my_bet.choose_bet
     race = MarioKart.new(players) #controller.rb
-    winner = race.return_winner
-    game_user.update_points(winner) #users.rb
-    # puts game_user.points #users.rb
-    # puts game_user.bet_player
+    winner = race.return_winner #controller.rb
+    p my_bet
+    my_bet.update_points(winner, game_user)
+    p my_bet
+    p game_user
   end
 
   def self.render(content)
@@ -40,6 +44,8 @@ class UserInterface
     self.render(MESSAGES[id])
   end
 
+  #Logs in user/ signs up new user
+  #========================================
   def self.login_screen
     self.render_message(:introduction)
 
@@ -91,8 +97,10 @@ class UserInterface
     return user
   end
 
+  #Sees what players you would like to have race
+  #========================================
   def self.display_players
-    puts "Who would you like to see race (type the numbers of each player)?"
+    puts "\nWho would you like to see race (type the numbers of each player)?"
     CHARACTERS.each { |key, value| puts "#{key}.) #{value}"}
     puts "9) finished"
   end
@@ -103,32 +111,51 @@ class UserInterface
     player_select = ""
 
     until player_select == "9"
-      puts "Selection: \n"
+      puts "\nSelection: \n"
       player_select = gets.chomp
       unless player_select == "9"
         selected << player_select
       end
     end
+
     players = []
     selected.uniq.each { |number|  players << CHARACTERS[number] }
     return players
   end
 
-  def self.choose_bet(user)
-    puts "who would you like to bet on?"
-    player = gets.chomp
-    #user.bet_player = player
-    puts "how much would you like to bet?"
-    amount = gets.chomp.to_i
-    #user.bet_amount = amount.to_i
-    puts amount.class
-    puts amount.to_i
-    user.place_bet(amount.to_i, player)
+end
+
+class Bet
+  attr_reader :bet_amount, :bet_player
+
+    #Chooses the bet amount
+  #========================================
+  def initialize
+    @bet_player = nil
+    @bet_amount = nil
+  end
+  def choose_bet
+    puts "Who would you like to bet on?"
+    @bet_player = gets.chomp
+
+    puts "How much would you like to bet?"
+    @bet_amount = gets.chomp
+  end
+
+  def check_winner(winner)
+    return true if winner.to_s == @bet_player
+    return false
+  end
+
+  def update_points(winner, user)
+    if check_winner(winner)
+      user.points += @bet_amount*(@racers.length-1)
+    else
+      user.points -= @bet_amount.to_i
+    end
   end
 
 end
-
-
 
 UserInterface.run_game
 

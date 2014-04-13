@@ -2,7 +2,7 @@ require_relative 'utils'
 
 class MarioKart
 
-  def initialize(*players)
+  def initialize(players)
     @length = 20
     @players = players
     @winner = nil
