@@ -31,7 +31,7 @@ class User
 
   def update_points(winner)
     if check_winner(winner)
-      @points += @bet_amount*(@racers.length-1)
+      @points += @bet_amount*(players.length-1)
     else
       @points = @points - @bet_amount.to_i
     end

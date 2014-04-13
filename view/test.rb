@@ -21,15 +21,33 @@ class UserInterface
     puts "game user class: #{game_user.class}"
     puts game_user.points
     players = self.ask_for_players
+    game_size = players.length
     game_user.choose_racers(players) #users.rb
     my_bet = Bet.new
     my_bet.choose_bet
     race = MarioKart.new(players) #controller.rb
     winner = race.return_winner #controller.rb
-    p my_bet
-    my_bet.update_points(winner, game_user)
-    p my_bet
-    p game_user
+    my_bet.update_points(winner, game_user, game_size)
+    self.game_loop(game_user)
+  end
+
+  def self.game_loop(game_user)
+    puts 'would you like to play again? (please type yes or no)'
+    answer = gets.chomp
+      if answer == "no"
+        puts "goodbye"
+      else
+        players = self.ask_for_players
+        game_user.choose_racers(players) #users.rb
+        my_bet = Bet.new
+        my_bet.choose_bet
+        race = MarioKart.new(players) #controller.rb
+        winner = race.return_winner #controller.rb
+        p my_bet
+        my_bet.update_points(winner, game_user, game_size)
+        p my_bet
+        p game_user
+      end
   end
 
   def self.render(content)
@@ -147,9 +165,9 @@ class Bet
     return false
   end
 
-  def update_points(winner, user)
+  def update_points(winner, user, game_size)
     if check_winner(winner)
-      user.points += @bet_amount*(@racers.length-1)
+      user.points += @bet_amount*(game_size-1)
     else
       user.points -= @bet_amount.to_i
     end
