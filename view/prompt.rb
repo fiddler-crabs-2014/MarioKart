@@ -15,8 +15,3 @@ class PromptManager
     input
   end
 end
-
-
-#ui = UserInput.new(...)
-#ui.validate_input(/[yes|no]/)
-

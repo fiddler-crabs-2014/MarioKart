@@ -49,7 +49,7 @@ class MarioKart
         move_to_home!
         self.advance_player!(player, position)
         self.print_board
-        sleep(0.2)
+        sleep(0.3)
       end
     end
     puts; puts

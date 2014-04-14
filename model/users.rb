@@ -1,5 +1,5 @@
 require 'sqlite3'
-
+#require_relative './authenticate.rb'
 
 #Only deals with the users
 #===========================================
@@ -10,35 +10,8 @@ class User
      @user_name = user_name
      @password = password
      @points = points
-     @bet_amount = 0
-     @bet_player = nil
-     @racers = []
   end
-
-  def choose_racers(*racers)
-    @racers = *racers
-  end
-
-  def check_winner(winner)
-    return true if winner.to_s == @bet_player
-    return false
-  end
-
-  def place_bet(value, player)
-    @bet_amount = value
-    @bet_player = player
-  end
-
-  def update_points(winner)
-    if check_winner(winner)
-      @points += @bet_amount*(players.length-1)
-    else
-      @points = @points - @bet_amount.to_i
-    end
-  end
-
 end
-
 
 module BackendCommunication
   DB = SQLite3::Database.open "../model/test.db"
@@ -53,24 +26,45 @@ module BackendCommunication
     return username.flatten[0] == user.to_s
   end
 
-  def self.update_points(new_points)
-    DB.execute("update users set points = '#{new_points}' where user_name = '#{@user_name}'")
+  def self.update_record(new_points, username)
+    DB.execute("update users set points = '#{new_points}' where user_name = '#{username}'")
   end
 
   def self.collect_points(password)
    return DB.execute("select points from users where password = '#{password}'").flatten[0]
   end
-end
 
-# ----
-## Non-executable driver code
+  def self.add_award_to_database(title, required_points)
+    DB.execute("INSERT INTO awards (title, required_points)
+                VALUES (?,?)", [title, required_points])
+  end
 
-module GameLogic
-  def find_winners_and_update_points(winners, users)
-    winners.each do |winner|
-      if user.bet_player == winner
-        user.update_points
-      end
-    end
+  def self.get_user_id(username)
+    DB.execute("SELECT id FROM users WHERE user_name = '#{username}'")
+  end
+
+  def self.check_user_award_id(username)
+    user_id = self.get_user_id(username).flatten[0]
+    award_id = DB.execute("SELECT award_id FROM user_awards JOIN users ON user_id = users.id WHERE user_id = '#{user_id}'")
+    award_id.flatten
+  end
+
+  def self.check_user_award_title(username)
+    titles = []
+    award_id = self.check_user_award_id(username)
+    award_id.each { |award_id| titles << DB.execute("SELECT title FROM awards WHERE id = '#{award_id}'")}
+    titles
+  end
+
+  def self.get_award_id(award_title)
+    DB.execute("SELECT id FROM awards WHERE title = '#{award_title}'")
+  end
+
+  def self.add_award_user_to_database(username, award)
+    user_id = self.get_user_id(username)
+    award_id = self.get_award_id(award)
+    DB.execute("INSERT INTO user_awards (user_id, award_id)
+                VALUES (?,?)", [user_id, award_id])
   end
 end
+

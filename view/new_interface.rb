@@ -49,7 +49,7 @@ class UserInterface
 
     unless answer.downcase.to_s == "yes" || answer.downcase.to_s == "no"
       puts "That is not acceptable, please put a yes, or a no..."
-      answer = gets.chomp!
+      answer = gets.chomp
     end
       if answer == "yes"
         self.new_user
@@ -80,14 +80,19 @@ class UserInterface
     puts "\n...and password:"
     password = gets.chomp!
 
-    if BackendCommunication.validate_user(user_name, password)
-
+    until BackendCommunication.validate_user(user_name, password)
+      puts "\nSorry that does not match our records. Try again."
+      puts "\nPlease enter your user_name:"
+      user_name = gets.chomp!
+      puts "\n...and password:"
+      password = gets.chomp!
+    end
     points = BackendCommunication.collect_points(password)
     puts "\nWelcome #{user_name}! You currently have #{points} to bet with."
     user = User.new(user_name, password, points)
-    else
-      puts "\nSorry that does not match our records."
-    end
+    # else
+    #   puts "\nSorry that does not match our records."
+    # end
     return user
   end
 
