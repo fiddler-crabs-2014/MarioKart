@@ -10,8 +10,7 @@ CHARACTERS = {"1"=> "Mario", "2"=> "Luigi", "3"=> "Yoshi", "4"=> "Peach", "5"=> 
 AWARDS = { 'red shell' => 200, 'green shell' => 180, 'banana' => 150, 'star' => 125,
   'mushroom' => 110  }
 
-MESSAGES = {introduction: ["\nWelcome to Mario Kart (DBC style)!",
-                         "Are you a new user?"],
+MESSAGES = {   introduction: ["\nWelcome to Mario Kart (DBC style)!", "Are you a new user?"],
                no_problem_first: ["Ok, no problem. What is your first name?"],
                no_problem_last: ["What is your last name?"],
                not_acceptable: ["That is not acceptable, please put a yes, or a no..."],
@@ -24,6 +23,7 @@ MESSAGES = {introduction: ["\nWelcome to Mario Kart (DBC style)!",
                try_again: ["\nSorry that does not match our records. Try again.",
                "Please enter your user_name:"]
                }
+
 class UserInterface
   extend BackendCommunication
 
@@ -59,16 +59,8 @@ class UserInterface
     end
   end
 
-  def self.render(content)
-    if content.is_a? Array
-      content.each {|msg| puts msg}
-    else
-      puts content
-    end
-  end
-
   def self.render_message(id)
-    self.render(MESSAGES[id])
+    puts MESSAGES[id]
     gets.chomp
   end
 
@@ -107,13 +99,13 @@ class UserInterface
       password = self.render_message(:password_req)
     end
     points = BackendCommunication.collect_points(password)
-    puts "\nWelcome #{user_name}! You currently have #{points} to bet with."
+    puts; puts "Welcome #{user_name}! You currently have #{points} to bet with."
     user = User.new(user_name, password, points)
     return user
   end
 
   def self.display_players
-    puts "\nWho would you like to see race (type the numbers of each player)?"
+    puts; puts "Who would you like to see race (type the numbers of each player)?"
     CHARACTERS.each { |key, value| puts "#{key}.) #{value}"}
     puts "9.) finished"
   end
@@ -143,31 +135,19 @@ end
 class Bet
   attr_reader :bet_amount, :bet_player
 
-    #Chooses the bet amount
-  #========================================
   def initialize
     @bet_player = nil
     @bet_amount = nil
   end
 
-  def render(content)
-    if content.is_a? Array
-      content.each {|msg| puts msg}
-    else
-      puts content
-    end
-  end
-
   def render_message(id)
-    render(MESSAGES[id])
+    puts MESSAGES[id]
     gets.chomp
   end
 
   def choose_bet(players)
     @bet_player = render_message(:bet_on).capitalize
-    until players.include?(@bet_player)
-      @bet_player = render_message(:not_option).capitalize
-    end
+    @bet_player = render_message(:not_option).capitalize until players.include?(@bet_player)
     @bet_amount = render_message(:how_much).to_i
   end
 
